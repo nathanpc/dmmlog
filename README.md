@@ -1,8 +1,8 @@
 # dmmlog
 
-A simple logging manager for your digital multimeter. With this simple script you can send logging commands to your DMM and dump the logs from it.
+A simple logging manager for your digital multimeter. With this simple script you can send commands to your DMM, perform data logging, and dump the logs stored in the device's memory.
 
-In the current version it only supports Agilent's U1200 line of multimeters, since the only logging multimeter I own at the time is a U1242B, but I plan on implementing others. If you want your multimeter included in the program please open a Issue.
+In the current version it only supports Agilent's U1200 line of multimeters, since the only logging multimeter I own at the time is a U1242B, but I plan on implementing others. **If you want your multimeter included in the program please open a Issue** and if possible provide some resources about the protocol it uses.
 
 
 # Special Thanks
