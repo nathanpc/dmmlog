@@ -19,6 +19,7 @@ class SerialConnection:
             raise Exception("Could not open the port '" + port + "'")
 
     def close(self):
+        """ Close the connection """
         self.ser.close()
 
     def send(self, command):
@@ -32,12 +33,35 @@ class SerialConnection:
 
         return self.ser.readline()
 
+class DMM:
+    def __init__(self, conn):
+        self.conn = conn
+
+    def identify(self):
+        self.conn.send("*IDN?")
+        response = self.conn.read()
+
+        if response is not "":
+            arr = response.split(",")
+            idn = { "oem":     arr[0],
+                    "model":   arr[1],
+                    "serial":  arr[2],
+                    "version": arr[3] }
+
+            return idn
+        else:
+            self.conn.close()
+            raise Exception("Could not identify device")
+
+
 # Main program.
 if __name__ == "__main__":
     port = sys.argv[1]
     conn = SerialConnection(port)
+    dmm  = DMM(conn)
 
-    conn.send("*IDN?")
-    print conn.read()
+    # Prints the identification stuff.
+    idn = dmm.identify()
+    print "Connected to", idn["oem"], idn["model"]
 
     conn.close()
