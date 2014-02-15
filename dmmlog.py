@@ -38,6 +38,7 @@ class DMM:
         self.conn = conn
 
     def _isFloat(self, n):
+        """ Check if `n` is a float """
         try:
             float(n)
             return True
@@ -45,6 +46,7 @@ class DMM:
             return False
 
     def identify(self):
+        """ Identify the device """
         self.conn.send("*IDN?")
         response = self.conn.read()
 
@@ -61,53 +63,72 @@ class DMM:
             raise Exception("Could not identify device")
 
     def fetch_unit(self, primary = True):
+        """ Fetch the unit from the device """
         unit = ""
         if primary:
             self.conn.send("CONF?")
         else:
             self.conn.send("CONF? @2")
 
+        # Grab the response and parse it.
         response = self.conn.read()
         response_arr = response.replace("\"", "").replace(",", " ").split(" ")
         setting  = response_arr[0]
         dmmrange = response_arr[1]
         #resolution =  response_arr[2]
 
+        # Check if the range is a float.
         if self._isFloat(dmmrange):
             dmmrange = float(dmmrange)
 
+        # Get the first part of the unit.
         if dmmrange is 0.001:
             unit = u"\u00B5"
         elif dmmrange <= 1:
             unit = "m"
         # TODO: kilo mega ranges!
 
+        # Get the second part of the unit
         if setting == "VOLT:DBM":
+            # dBm
             unit = "dBm"
         elif setting == "VOLT:DBV":
+            # dBV
             unit = "dBV"
         elif (setting.find("VOLT") is 0) or (setting == "DIOD"):
+            # Voltage and diode.
             unit += "V"
         elif (setting == "RES") or (setting == "CONT"):
+            # Resistance and continuity.
             unit += u"\u03A9"
         elif setting == "COND":
+            # Conductivity
             unit += "S"
         elif setting == "FREQ":
+            # Frequency
             unit += "Hz"
         elif setting == "CAP":
+            # Capacitance
             unit += "F"
         elif setting.find("TEMP") is 0:
+            # Temperature
             if dmmrange == "CEL":
+                # Celcius
                 unit = u"\u00B0C"
             elif dmmrange == "FAR":
+                # Fahrenreit
                 unit = u"\u00B0F"
             else:
+                # Unknown
                 raise Exception("Unknown temperature unit '" + dmmrange + "'")
         elif setting.find("CURR"):
+            # Currency
             unit += "A"
         elif (setting == "HRAT") or (setting.find("CPER")):
+            # Duty cycle and currency percentage.
             unit = "%"
         else:
+            # Unknown
             raise Exception("Unknown setting '" + response + "'")
 
         return unit
