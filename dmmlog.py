@@ -62,7 +62,7 @@ class DMM:
             self.conn.close()
             raise Exception("Could not identify device")
 
-    def fetch_unit(self, primary = True):
+    def fetch_unit(self, primary = True, include_range = False):
         """ Fetch the unit from the device """
         unit = ""
         if primary:
@@ -75,18 +75,18 @@ class DMM:
         response_arr = response.replace("\"", "").replace(",", " ").split(" ")
         setting  = response_arr[0]
         dmmrange = response_arr[1]
-        #resolution =  response_arr[2]
 
-        # Check if the range is a float.
-        if self._isFloat(dmmrange):
-            dmmrange = float(dmmrange)
+        if include_range:
+            # Check if the range is a float.
+            if self._isFloat(dmmrange):
+                dmmrange = float(dmmrange)
 
-        # Get the first part of the unit.
-        if dmmrange is 0.001:
-            unit = u"\u00B5"
-        elif dmmrange <= 1:
-            unit = "m"
-        # TODO: kilo mega ranges!
+                # Get the first part of the unit.
+                if dmmrange == 0.001:
+                    unit = u"\u00B5"
+                elif dmmrange <= 1:
+                    unit = "m"
+                # TODO: kilo mega ranges!
 
         # Get the second part of the unit
         if setting == "VOLT:DBM":
@@ -95,7 +95,7 @@ class DMM:
         elif setting == "VOLT:DBV":
             # dBV
             unit = "dBV"
-        elif (setting.find("VOLT") is 0) or (setting == "DIOD"):
+        elif (setting.find("VOLT") == 0) or (setting == "DIOD"):
             # Voltage and diode.
             unit += "V"
         elif (setting == "RES") or (setting == "CONT"):
@@ -110,7 +110,7 @@ class DMM:
         elif setting == "CAP":
             # Capacitance
             unit += "F"
-        elif setting.find("TEMP") is 0:
+        elif setting.find("TEMP") == 0:
             # Temperature
             if dmmrange == "CEL":
                 # Celcius
@@ -121,10 +121,10 @@ class DMM:
             else:
                 # Unknown
                 raise Exception("Unknown temperature unit '" + dmmrange + "'")
-        elif setting.find("CURR"):
+        elif setting.find("CURR") == 0:
             # Currency
             unit += "A"
-        elif (setting == "HRAT") or (setting.find("CPER")):
+        elif (setting == "HRAT") or (setting.find("CPER") == 0):
             # Duty cycle and currency percentage.
             unit = "%"
         else:
@@ -132,6 +132,23 @@ class DMM:
             raise Exception("Unknown setting '" + response + "'")
 
         return unit
+
+    def fetch_value(self, primary = True):
+        """ Fetch the value from the DMM. """
+        if primary:
+            self.conn.send("FETC?")
+        else:
+            self.conn.send("FETC? @2")
+
+        reading = float(self.conn.read())
+        return reading
+
+    def fetch(self, primary = True, range_value = False):
+        """ Fetch the full reading (value and unit) from the DMM. """
+        value = self.fetch_value(primary)
+        unit  = self.fetch_unit(primary, range_value)
+
+        return str(value) + unit
 
 # Main program.
 if __name__ == "__main__":
@@ -143,11 +160,7 @@ if __name__ == "__main__":
     idn = dmm.identify()
     print "Connected to", idn["oem"], idn["model"]
 
-    print dmm.fetch_unit()
-    conn.send("FETC?")
-    print conn.read()
-    print dmm.fetch_unit(False)
-    conn.send("FETC? @2")
-    print conn.read()
+    print dmm.fetch()
+    print dmm.fetch(False)
 
     conn.close()
