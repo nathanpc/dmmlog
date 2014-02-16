@@ -83,10 +83,12 @@ class DMM:
 
                 # Get the first part of the unit.
                 if dmmrange == 0.001:
-                    unit = u"\u00B5"
-                elif dmmrange <= 1:
+                    #unit = u"\u00B5"
+                    unit = "u"
+                elif dmmrange <= 1 < 10000:
                     unit = "m"
-                # TODO: kilo mega ranges!
+                elif dmmrange >= 10000:
+                    unit = "k"
 
         # Get the second part of the unit
         if setting == "VOLT:DBM":
@@ -148,6 +150,22 @@ class DMM:
         value = self.fetch_value(primary)
         unit  = self.fetch_unit(primary, range_value)
 
+        if range_value:
+            if unit[0] == "u":
+                # Micro
+                value *= 1000000
+            elif unit[0] == "m":
+                # Milli
+                value *= 1000
+            elif unit[0] == "k":
+                # Kilo
+                value /= 1000
+
+                if value >= 1000:
+                    # Mega
+                    value /= 1000
+                    unit = "M" + unit[1:]
+
         return str(value) + unit
 
 # Main program.
@@ -160,7 +178,7 @@ if __name__ == "__main__":
     idn = dmm.identify()
     print "Connected to", idn["oem"], idn["model"]
 
-    print dmm.fetch()
-    print dmm.fetch(False)
+    print dmm.fetch(True, True)
+    print dmm.fetch(False, True)
 
     conn.close()
