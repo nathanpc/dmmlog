@@ -10,9 +10,9 @@ class SerialConnection:
             # The user specified a port, so let's open it.
             self.open(port)
 
-    def open(self, port):
+    def open(self, port, baudrate = 9600):
         """ Open a connection and check if it's open. """
-        self.ser = serial.Serial(port, baudrate = 9600, timeout = 1)
+        self.ser = serial.Serial(port, baudrate = baudrate, timeout = 1)
 
         if not self.ser.isOpen():
             raise Exception("Could not open the port '" + port + "'")
