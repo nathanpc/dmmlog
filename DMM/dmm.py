@@ -1,7 +1,5 @@
 #!/usr/bin/python
 
-import threading
-
 class DMM:
     def __init__(self, conn):
         self.conn = conn
