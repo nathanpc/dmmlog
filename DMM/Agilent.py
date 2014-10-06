@@ -1,8 +1,8 @@
 #!/usr/bin/python
 
-from dmm import *
+import dmm
 
-class Agilent(DMM):
+class DMM(dmm.DMM):
     def identify(self):
         """Identify the device.
 		
@@ -139,10 +139,10 @@ class Agilent(DMM):
 
 		Args:
 			primary (bool, optional): Are you fetching the primary reading?
-			include_range (bool, optional): Include the range in the output. (Example: "123.4mV")
+			range_value (bool, optional): Include the range in the output. (Example: "123.4mV")
 
 		Returns:
-			String with the reading and range if `include_range` is True.
+			String with the reading and range if `range_value` is True.
 		"""
         value = self.fetch_value(primary)
         unit  = self.fetch_unit(primary, range_value)
