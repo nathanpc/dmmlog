@@ -4,7 +4,14 @@ from dmm import *
 
 class Agilent(DMM):
     def identify(self):
-        """ Identify the device """
+        """Identify the device.
+		
+		Note:
+			Do not include the `self` parameter in the ``Args`` section.
+
+		Returns:
+			A dictionary with at least two parameters: "oem" and "model".
+		"""
         self.conn.send("*IDN?")
         response = self.conn.read()
 
@@ -21,7 +28,18 @@ class Agilent(DMM):
             raise Exception("Could not identify device")
 
     def fetch_unit(self, primary = True, include_range = False):
-        """ Fetch the unit from the device """
+        """Fetch the unit from the device
+
+		Note:
+			Do not include the `self` parameter in the ``Args`` section.
+
+		Args:
+			primary (bool, optional): Are you fetching the primary reading?
+			include_range (bool, optional): Include the range in the output. (Example: "mV")
+
+		Returns:
+			String with the unit and range if `include_range` is True.
+		"""
         unit = ""
         if primary:
             self.conn.send("CONF?")
@@ -94,7 +112,17 @@ class Agilent(DMM):
         return unit
 
     def fetch_value(self, primary = True):
-        """ Fetch the value from the DMM. """
+        """Fetch the value from the DMM.
+
+		Note:
+			Do not include the `self` parameter in the ``Args`` section.
+
+		Args:
+			primary (bool, optional): Are you fetching the primary reading?
+
+		Returns:
+			String with the reading value from the DMM.
+		"""
         if primary:
             self.conn.send("FETC?")
         else:
@@ -104,7 +132,18 @@ class Agilent(DMM):
         return reading
 
     def fetch(self, primary = True, range_value = False):
-        """ Fetch the full reading (value and unit) from the DMM. """
+        """Fetch the full reading (value and unit) from the DMM.
+
+		Note:
+			Do not include the `self` parameter in the ``Args`` section.
+
+		Args:
+			primary (bool, optional): Are you fetching the primary reading?
+			include_range (bool, optional): Include the range in the output. (Example: "123.4mV")
+
+		Returns:
+			String with the reading and range if `include_range` is True.
+		"""
         value = self.fetch_value(primary)
         unit  = self.fetch_unit(primary, range_value)
 

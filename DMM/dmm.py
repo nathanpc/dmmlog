@@ -13,17 +13,28 @@ class DMM:
             return False
 
     def identify(self):
-		""" Identify the device """
+		"""Identify the device.
+		
+		Note:
+			Do not include the `self` parameter in the ``Args`` section.
+
+		Returns:
+			A dictionary with at least two parameters: "oem" and "model".
+		"""
 		return None
 
-    def fetch_unit(self, primary = True, include_range = False):
-        """ Fetch the unit from the device """
-        return None
-
-    def fetch_value(self, primary = True):
-        """ Fetch the value from the DMM. """
-        return None
-
     def fetch(self, primary = True, range_value = False):
-        """ Fetch the full reading (value and unit) from the DMM. """
+        """Fetch the full reading (value and unit) from the DMM.
+
+		Note:
+			Do not include the `self` parameter in the ``Args`` section.
+
+		Args:
+			primary (bool, optional): Are you fetching the primary reading?
+			include_range (bool, optional): Include the range in the output. (Example: "123.4mV")
+
+		Returns:
+			String with the reading and range if `include_range` is True.
+		"""
         return None
+
