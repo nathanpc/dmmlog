@@ -88,7 +88,7 @@ class DMM(dmm.DMM):
         elif setting == "CAP":
             # Capacitance
             unit += "F"
-        elif setting.find("TEMP") == 0:
+        elif setting.find("TEMP") == 0 or (setting.find("T1") == 0) or (setting.find("T2") == 0):
             # Temperature
             if dmmrange == "CEL":
                 # Celcius
